@@ -1,0 +1,6 @@
+{
+  "name": "Narayan Optical & Optometry Clinic",
+  "description": "Precision computerized eye testing, designer eyewear, and specialist contact lens fittings at 401/4B, Avas Vikas Colony, Jivan Jyoti Hospital Road, Agra.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
