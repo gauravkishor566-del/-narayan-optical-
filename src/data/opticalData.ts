@@ -67,7 +67,7 @@ export const STORE_INFO = {
   googleRating: 4.9,
   reviewsCount: '380+',
   totalPatients: '10,000+',
-  mapUrl: 'https://maps.google.com/?q=Narayan+Optical+Jivan+Jyoti+Hospital+Road+Avas+Vikas+Colony+Agra'
+  mapUrl: 'https://maps.google.com/?q=Narayan+Optical,+Jivan+Jyoti+Hospital+Road,+Avas+Vikas+Colony,+Agra&ll=27.2012,77.9596'
 };
 
 export const FRAMES: EyewearFrame[] = [

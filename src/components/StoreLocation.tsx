@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { STORE_INFO, OPTOMETRIST_PROFILE } from '../data/opticalData';
-import { MapPin, Clock, Phone, Send, ExternalLink, Navigation, Compass, CheckCircle, Layers, ZoomIn } from 'lucide-react';
+import { MapPin, Clock, Phone, Send, ExternalLink, Navigation, Compass, CheckCircle, Layers, ZoomIn, Calendar, MessageCircle, Search } from 'lucide-react';
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 
 const STORE_COORDINATES = {
-  lat: 27.1852,
-  lng: 77.9620
+  lat: 27.2012,
+  lng: 77.9596
 };
 
-export const StoreLocation: React.FC = () => {
+interface StoreLocationProps {
+  onBookExam?: () => void;
+}
+
+export const StoreLocation: React.FC<StoreLocationProps> = ({ onBookExam }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [mapType, setMapType] = useState<'roadmap' | 'satellite' | 'directions'>('roadmap');
+  const [mapMode, setMapMode] = useState<'verified' | 'live'>('verified');
+  const [mapType, setMapType] = useState<'roadmap' | 'satellite'>('roadmap');
   const [isInfoWindowOpen, setIsInfoWindowOpen] = useState(true);
 
   // Read provisioned Google Maps API key from Vite environment
@@ -36,12 +41,14 @@ export const StoreLocation: React.FC = () => {
   };
 
   const getEmbedUrl = () => {
-    const query = encodeURIComponent("401/4B, Avas Vikas Colony, Jivan Jyoti Hospital Road, Agra");
+    const query = encodeURIComponent("Narayan Optical & Optometry Clinic, Jivan Jyoti Hospital Road, Avas Vikas Colony, Agra");
     if (mapType === 'satellite') {
-      return `https://maps.google.com/maps?q=${query}&t=k&z=16&ie=UTF8&iwloc=&output=embed`;
+      return `https://maps.google.com/maps?q=${query}&t=k&z=17&ie=UTF8&iwloc=B&output=embed`;
     }
-    return `https://maps.google.com/maps?q=${query}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    return `https://maps.google.com/maps?q=${query}&t=&z=17&ie=UTF8&iwloc=B&output=embed`;
   };
+
+  const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=Narayan+Optical+%26+Optometry+Clinic+Agra`;
 
   return (
     <section id="location" className="py-14 sm:py-20 bg-slate-50/70 border-b border-slate-200/80">
@@ -80,7 +87,7 @@ export const StoreLocation: React.FC = () => {
                     Jivan Jyoti Hospital Road, Agra
                   </p>
                   <p className="text-xs text-slate-500 mt-2">
-                    <strong className="text-slate-700 font-semibold">Landmark:</strong> Directly on Jivan Jyoti Hospital Road, Sector 3, Avas Vikas Colony
+                    <strong className="text-slate-700 font-semibold">Landmarks:</strong> Jivan Jyoti Hospital Road, near Bajaj Finance Branch &amp; NV Road, Sector 3/4B
                   </p>
                 </div>
               </div>
@@ -222,49 +229,48 @@ export const StoreLocation: React.FC = () => {
 
           </div>
 
-          {/* Right Column (7 cols): Real Google Map & Directions */}
+          {/* Right Column (7 cols): Verified Google Maps Listing & Interactive Navigation */}
           <div className="lg:col-span-7 space-y-6">
             
-            {/* Styled Map Card with Genuine Google Maps */}
-            <div className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm">
+            {/* Styled Google Maps Card */}
+            <div className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-md">
               
-              {/* Map Bar Controls */}
-              <div className="px-5 py-3.5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3">
+              {/* Top Navigation & Mode Switcher Bar */}
+              <div className="px-4 sm:px-5 py-3 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
                   <div>
-                    <h4 className="text-xs sm:text-sm font-bold tracking-wide">
-                      Narayan Optical on Google Maps
+                    <h4 className="text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5">
+                      <span>Narayan Optical &amp; Optometry Clinic</span>
                     </h4>
                     <p className="text-[11px] text-slate-400">
-                      401/4B, Avas Vikas Colony, Jivan Jyoti Hospital Road, Agra
+                      Jivan Jyoti Hospital Road, Avas Vikas Colony, Agra
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => setMapType('roadmap')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                      mapType === 'roadmap'
-                        ? 'bg-teal-500 text-slate-950 font-bold'
+                    onClick={() => setMapMode('verified')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      mapMode === 'verified'
+                        ? 'bg-teal-500 text-slate-950 font-bold shadow-xs'
                         : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                     }`}
                   >
-                    <span>Map</span>
+                    <span>Google Maps View</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setMapType('satellite')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                      mapType === 'satellite'
-                        ? 'bg-teal-500 text-slate-950 font-bold'
+                    onClick={() => setMapMode('live')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      mapMode === 'live'
+                        ? 'bg-teal-500 text-slate-950 font-bold shadow-xs'
                         : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                     }`}
                   >
-                    <Layers className="w-3 h-3" />
-                    <span>Satellite</span>
+                    <span>Live Embed</span>
                   </button>
                   <a
                     href={STORE_INFO.mapUrl}
@@ -278,106 +284,218 @@ export const StoreLocation: React.FC = () => {
                 </div>
               </div>
 
-              {/* Genuine Google Map Display Container (explicit height as per CF2) */}
-              <div className="relative w-full h-80 sm:h-96 bg-slate-100 overflow-hidden">
-                {apiKey ? (
-                  <APIProvider apiKey={apiKey}>
-                    <Map
-                      mapId="DEMO_MAP_ID"
-                      internalUsageAttributionIds={["gmp_mcp_codeassist_v1_aistudio"]}
-                      defaultCenter={STORE_COORDINATES}
-                      defaultZoom={16}
-                      mapTypeId={mapType === 'satellite' ? 'hybrid' : 'roadmap'}
-                      gestureHandling="cooperative"
-                      disableDefaultUI={false}
-                      className="w-full h-full"
+              {/* Main Map Presentation */}
+              {mapMode === 'verified' ? (
+                /* Authentic Verified Google Maps Card (As seen on user's Google Maps screenshot) */
+                <div className="relative bg-slate-100 flex flex-col items-center justify-center border-b border-slate-200 p-3 sm:p-5">
+                  <div className="relative w-full max-w-[480px] mx-auto rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white">
+                    <img
+                      src="/assets/store/google_maps_focused.jpg"
+                      alt="Narayan Optical & Optometry Clinic on Google Maps"
+                      className="w-full h-auto object-contain block select-none"
+                    />
+
+                    {/* Interactive Overlay Hotspots directly on the map */}
+                    {/* Top Search Bar Click Area */}
+                    <a
+                      href={STORE_INFO.mapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="absolute top-2 left-3 right-3 h-12 rounded-full cursor-pointer z-20 hover:ring-2 hover:ring-teal-500/50 transition-all"
+                      title="Open Narayan Optical & Optometry Clinic on Google Maps"
                     >
-                      <AdvancedMarker
-                        position={STORE_COORDINATES}
-                        onClick={() => setIsInfoWindowOpen(true)}
-                        title="Narayan Optical & Optometry Clinic"
+                      <span className="sr-only">Open on Google Maps</span>
+                    </a>
+
+                    {/* Clinic Red Pin Pulse Indicator */}
+                    <a
+                      href={googleMapsDirectionsUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="absolute top-[35%] left-[30%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-20"
+                      title="Get Directions to Narayan Optical"
+                    >
+                      <div className="relative">
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-4 w-4 bg-teal-500"></span>
+                        </span>
+                      </div>
+                    </a>
+
+                    {/* Floating Bottom Quick Action Strip */}
+                    <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-slate-200">
+                      <a
+                        href={googleMapsDirectionsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 flex items-center justify-center gap-1 py-2 px-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
                       >
-                        <Pin
-                          background="#0d9488"
-                          borderColor="#042f2e"
-                          glyphColor="#ffffff"
-                          scale={1.2}
-                        />
-                      </AdvancedMarker>
+                        <Navigation className="w-3.5 h-3.5" />
+                        <span>Directions</span>
+                      </a>
 
-                      {isInfoWindowOpen && (
-                        <InfoWindow
-                          position={STORE_COORDINATES}
-                          onCloseClick={() => setIsInfoWindowOpen(false)}
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=27.2012,77.9596`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 flex items-center justify-center gap-1 py-2 px-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        <Compass className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Start</span>
+                      </a>
+
+                      <a
+                        href="https://wa.me/917037005522?text=Hi%20Narayan%20Optical,%20I%20am%20looking%20for%20your%20store%20location%20on%20Jivan%20Jyoti%20Hospital%20Road,%20Agra."
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 flex items-center justify-center gap-1 py-2 px-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Ask</span>
+                      </a>
+
+                      {onBookExam && (
+                        <button
+                          type="button"
+                          onClick={onBookExam}
+                          className="flex-1 flex items-center justify-center gap-1 py-2 px-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
                         >
-                          <div className="p-2 text-slate-900 max-w-xs font-sans">
-                            <h5 className="font-bold text-sm text-teal-800">Narayan Optical</h5>
-                            <p className="text-xs text-slate-600 mt-0.5">
-                              401/4B, Avas Vikas Colony, Jivan Jyoti Hospital Road, Agra
-                            </p>
-                            <p className="text-[11px] text-emerald-700 font-semibold mt-1">
-                              Open Today: 10:00 AM – 8:45 PM
-                            </p>
-                            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                              <a
-                                href={STORE_INFO.mapUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-xs text-teal-700 font-bold hover:underline"
-                              >
-                                Directions →
-                              </a>
-                              <a
-                                href="tel:7037005522"
-                                className="text-xs text-slate-600 font-medium"
-                              >
-                                Call 7037005522
-                              </a>
-                            </div>
-                          </div>
-                        </InfoWindow>
+                          <Calendar className="w-3.5 h-3.5 text-teal-400" />
+                          <span>Book</span>
+                        </button>
                       )}
-                    </Map>
-                  </APIProvider>
-                ) : (
-                  // Google Maps High-Fidelity Embed (Always active and renders interactive Google Map without blocking)
-                  <iframe
-                    title="Narayan Optical Google Maps Location"
-                    src={getEmbedUrl()}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="w-full h-full"
-                  />
-                )}
+                    </div>
+                  </div>
 
-                {/* Floating Clean Badge (Compact, non-intrusive in corner) */}
-                <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md border border-slate-200/90 pointer-events-auto">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse"></span>
-                    <span className="font-bold text-slate-900 text-xs">Narayan Optical · Jivan Jyoti Hospital Road</span>
+                  {/* Verified Notice Strip */}
+                  <div className="w-full max-w-[480px] mx-auto mt-2.5 px-3 py-1.5 bg-white/90 rounded-xl border border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
+                    <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                      <CheckCircle className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Google Maps Listing · Narayan Optical &amp; Optometry Clinic</span>
+                    </span>
+                    <a
+                      href={STORE_INFO.mapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-semibold text-teal-700 hover:underline flex items-center gap-1"
+                    >
+                      <span>Open App</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
+              ) : (
+                /* Live Interactive Map Embed */
+                <div className="relative w-full h-80 sm:h-96 bg-slate-100 overflow-hidden">
+                  {apiKey ? (
+                    <APIProvider apiKey={apiKey}>
+                      <Map
+                        mapId="DEMO_MAP_ID"
+                        internalUsageAttributionIds={["gmp_mcp_codeassist_v1_aistudio"]}
+                        defaultCenter={STORE_COORDINATES}
+                        defaultZoom={17}
+                        mapTypeId={mapType === 'satellite' ? 'hybrid' : 'roadmap'}
+                        gestureHandling="cooperative"
+                        disableDefaultUI={false}
+                        className="w-full h-full"
+                      >
+                        <AdvancedMarker
+                          position={STORE_COORDINATES}
+                          onClick={() => setIsInfoWindowOpen(true)}
+                          title="Narayan Optical & Optometry Clinic"
+                        >
+                          <Pin
+                            background="#dc2626"
+                            borderColor="#7f1d1d"
+                            glyphColor="#ffffff"
+                            scale={1.2}
+                          />
+                        </AdvancedMarker>
 
-                <a
-                  href={STORE_INFO.mapUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-xs border border-slate-200 text-xs font-semibold text-teal-700 hover:text-teal-900 flex items-center gap-1.5 transition-colors"
-                >
-                  <ZoomIn className="w-3.5 h-3.5" />
-                  <span>View in Full Google Maps</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
+                        {isInfoWindowOpen && (
+                          <InfoWindow
+                            position={STORE_COORDINATES}
+                            onCloseClick={() => setIsInfoWindowOpen(false)}
+                          >
+                            <div className="p-2 text-slate-900 max-w-xs font-sans">
+                              <h5 className="font-bold text-sm text-teal-800">Narayan Optical &amp; Optometry Clinic</h5>
+                              <p className="text-xs text-slate-600 mt-0.5">
+                                401/4B, Avas Vikas Colony, Jivan Jyoti Hospital Road, Agra
+                              </p>
+                              <p className="text-[11px] text-emerald-700 font-semibold mt-1">
+                                Open Today: 10:00 AM – 8:45 PM
+                              </p>
+                              <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                                <a
+                                  href={googleMapsDirectionsUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-xs text-teal-700 font-bold hover:underline"
+                                >
+                                  Directions →
+                                </a>
+                                <a
+                                  href="tel:7037005522"
+                                  className="text-xs text-slate-600 font-medium"
+                                >
+                                  Call 7037005522
+                                </a>
+                              </div>
+                            </div>
+                          </InfoWindow>
+                        )}
+                      </Map>
+                    </APIProvider>
+                  ) : (
+                    <iframe
+                      title="Narayan Optical Google Maps Location"
+                      src={getEmbedUrl()}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="w-full h-full"
+                    />
+                  )}
 
-              {/* Navigation Action Buttons */}
+                  {/* Live Map Marker Pill */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full pointer-events-none z-10 flex flex-col items-center">
+                    <div className="px-3 py-1.5 bg-slate-950/95 backdrop-blur-md text-white border border-teal-400/80 rounded-xl shadow-xl flex items-center gap-2 mb-1">
+                      <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+                      <div className="text-left">
+                        <p className="text-xs font-black tracking-wide text-teal-300">Narayan Optical &amp; Optometry Clinic</p>
+                        <p className="text-[10px] text-slate-300 font-medium">Jivan Jyoti Hospital Road, Agra</p>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <div className="w-8 h-8 rounded-full bg-red-600 border-2 border-white shadow-xl flex items-center justify-center text-white">
+                        <MapPin className="w-4 h-4 fill-white text-red-700" />
+                      </div>
+                      <div className="w-2.5 h-2.5 bg-red-600 rotate-45 mx-auto -mt-1 shadow-md border-r-2 border-b-2 border-white"></div>
+                    </div>
+                    <div className="w-3.5 h-1 bg-slate-950/40 rounded-full blur-[1px] mt-0.5"></div>
+                  </div>
+
+                  <a
+                    href={STORE_INFO.mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-xs border border-slate-200 text-xs font-semibold text-teal-700 hover:text-teal-900 flex items-center gap-1.5 transition-colors z-20"
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                    <span>View in Full Google Maps</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
+
+              {/* Navigation Action Buttons Below Map */}
               <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=401%2F4B%2C+Avas+Vikas+Colony%2C+Jivan+Jyoti+Hospital+Road%2C+Agra`}
+                  href={googleMapsDirectionsUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center justify-center gap-2 py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
@@ -395,31 +513,31 @@ export const StoreLocation: React.FC = () => {
                 </a>
               </div>
 
-              {/* How to Reach from Around Agra */}
+              {/* How to Reach & Surrounding Landmarks from Google Maps */}
               <div className="p-6 sm:p-7 space-y-4">
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 font-display">
                   <Compass className="w-4 h-4 text-teal-600" />
-                  <span>How to Reach from Around Agra</span>
+                  <span>Surrounding Landmarks &amp; Access Routes</span>
                 </h3>
 
                 <div className="space-y-3">
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                     <h4 className="text-xs font-bold text-slate-900 mb-1 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-teal-600"></span>
-                      <span>From Avas Vikas Colony / Sikandra Corridor</span>
+                      <span>Verified Google Maps Landmarks Near Store</span>
                     </h4>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Head along Jivan Jyoti Hospital Road into Sector 3. Narayan Optical is located directly on Jivan Jyoti Hospital Road, opposite Jivan Jyoti Hospital.
+                      Located on Jivan Jyoti Hospital Road (NV Rd) right near <strong>Bajaj Finance Branch</strong>, <strong>Sagar Saree Kendra</strong>, <strong>B.H. Electronic</strong>, and <strong>SR Traders</strong>.
                     </p>
                   </div>
 
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                     <h4 className="text-xs font-bold text-slate-900 mb-1 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-teal-600"></span>
-                      <span>From Shahganj / Central Agra / Bodla Intersection</span>
+                      <span>From Avas Vikas Colony / Sikandra Corridor</span>
                     </h4>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Drive through the main Sector 3 access artery towards Jivan Jyoti Hospital Road (approx. 5–8 minutes drive). Free street parking is available right in front of the optical clinic.
+                      Head along Jivan Jyoti Hospital Road into Sector 3 / Sector 4B. Narayan Optical is located directly on Jivan Jyoti Hospital Road with prominent signage and ground-floor glass entrance.
                     </p>
                   </div>
                 </div>

@@ -102,7 +102,9 @@ export default function App() {
         <PatientReviews />
 
         {/* Store Location, Timings (10 AM to 8:45 PM), Map & Directions */}
-        <StoreLocation />
+        <StoreLocation
+          onBookExam={() => handleOpenBooking('Computerized Auto-Refraction & Vision Exam')}
+        />
       </main>
 
       {/* Footer */}

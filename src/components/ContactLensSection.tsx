@@ -24,7 +24,7 @@ export const ContactLensSection: React.FC<ContactLensSectionProps> = ({ onBookFi
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-950/80 border border-teal-500/40 text-teal-400 text-xs font-bold tracking-wider uppercase mb-3">
             <Droplets className="w-4 h-4 text-teal-400" />
-            <span>CERTIFIED CONTACT LENS CLINIC (C.C.L.P.)</span>
+            <span>CERTIFIED CONTACT LENS CLINIC</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight font-display">
             Premium Contact Lens Studio
@@ -95,7 +95,7 @@ export const ContactLensSection: React.FC<ContactLensSectionProps> = ({ onBookFi
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4 text-teal-400" />
-              <span>C.C.L.P. CERTIFIED CLINICAL FITTING</span>
+              <span>CERTIFIED CLINICAL FITTING</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
               Why Get Contact Lenses Fitted at Narayan Optical?
